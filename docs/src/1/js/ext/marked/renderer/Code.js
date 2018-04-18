@@ -3,42 +3,15 @@ define(function(require, exports, module) {
     var hljs = require('highlight');
     Code = {};
     Code.Setup = function(renderer) {
-	// 言語別ハイライト用JS読込
-	// https://stackoverflow.com/questions/17446844/dynamic-require-in-requirejs-getting-module-name-has-not-been-loaded-yet-for-c?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 	renderer.code = function(code, language) {
 	    lang_name = Code._Split(language);
-	    require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min'], function(hllangjs) {console.log('読込完了: highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min');});
-	    return Code._MakePreCodeTag(lang_name[0], lang_name[1], code);
-	    /*
-	    renderer.code の応答を非同期にすると戻り値なしとして`undefined`になってしまう。
-	    languages/*.jsの動的ロードをするタイミングは別のときにすべき？
-	    
-	    try {
-		require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min'], function(hllangjs) {
-		    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
-		    //return Code._MakeTag(lang_name[0], lang_name[1]);
-		});
-	    } catch (e) {
-		console.log(e);
-		return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
-	    }
-	    */
-	};
-	/*
-	try {
-	    // 言語別ハイライト用JS読込
+	    // 言語別ハイライト用JS動的読込
 	    // https://stackoverflow.com/questions/17446844/dynamic-require-in-requirejs-getting-module-name-has-not-been-loaded-yet-for-c?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-	    require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang)+'.min'], function(hllangjs) {
-		renderer.code = function(code, language) {
-		    lang_name = Code._Split(language);
-		    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
-		    //return Code._MakeTag(lang_name[0], lang_name[1]);
-		}
-	    });
-	} catch (e) {
-	    console.log(e);
-	}
-	*/
+	    var hllangjs = require('js/lib/highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min');
+	    console.log('読込完了: highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min');
+	    //require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min'], function(hllangjs) {console.log('読込完了: highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min');});
+	    return Code._MakePreCodeTag(lang_name[0], lang_name[1], code);
+	};
     };
     // ```lang:filename
     Code._Split = function(language) {
@@ -47,7 +20,6 @@ define(function(require, exports, module) {
 	var lang = info.shift();
 	var fileName = info.join(delimiter);
 	return [lang, fileName];
-	//return [Code._ReplaceLanguage(lang), fileName];
     };
     // ```sh とするが shell.min.js という名前である
     // ```html とするが xml.min.js しかない
@@ -71,24 +43,5 @@ define(function(require, exports, module) {
 	if (fileName) { return '<code class="filename">'+fileName+'</code>'; }
 	else { return ''; }
     };
-    /*
-    // 言語別ハイライト用JS読込
-    Code._DynamicLoadHllangjs = function(lang) {
-	// https://stackoverflow.com/questions/17446844/dynamic-require-in-requirejs-getting-module-name-has-not-been-loaded-yet-for-c?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-	var hllangjs = require('js/lib/highlight/languages/'+lang+'.min');
-	//var hllangjs = require('js/lib/highlight/languages/'+language+'.js');
-    };
-    */
     return Code;
-    /*
-    return {
-	Setup: function(renderer) {
-	    var hljs = require('highlight');
-	    renderer.code = function(code, language) {
-		return '<pre'+'><code class="hljs">' + hljs.highlightAuto(code).value + '</code></pre>';
-	    };
-
-	}
-    };
-    */
 });
