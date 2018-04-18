@@ -3,20 +3,27 @@ define(function(require, exports, module) {
     var hljs = require('highlight');
     Code = {};
     Code.Setup = function(renderer) {
-	//var hljs = require('highlight');
-	renderer.code = function(code, language) {
-	    lang_name = Code._Split(language);
-	    return Code._MakeTag(lang_name[0], lang_name[1]);
-	    /*
+	// languages/*.min.js ファイルが存在したらロードする
+	$.ajax({
+	    url: 'https://ytyaru.github.io/JS.require.20180418173809/src/1/js/lib/highlight/languages/'+lang+'.min.js',
+	})
+	.done(function (response, textStatus, jqXHR) {
 	    // 言語別ハイライト用JS読込
 	    // https://stackoverflow.com/questions/17446844/dynamic-require-in-requirejs-getting-module-name-has-not-been-loaded-yet-for-c?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-	    require(['js/lib/highlight/languages/'+lang_name[0]+'.min'], function(hllangjs) {
-		return '<pre>' + Code._FileNameTag(lang_name[1])+ '<code class="hljs">' + hljs.highlightAuto(code).value + '</code></pre>';
+	    require(['js/lib/highlight/languages/'+lang+'.min'], function(hllangjs) {
+		renderer.code = function(code, language) {
+		    lang_name = Code._Split(language);
+		    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
+		    //return Code._MakeTag(lang_name[0], lang_name[1]);
+		}
 	    });
-	    //Code._DynamicLoadHllangjs(lang_name[0]);
-	    //return '<pre>' + Code._FileNameTag(lang_name[1])+ '<code class="hljs">' + hljs.highlightAuto(code).value + '</code></pre>';
-	    */
-	};
+	})
+	.fail(function (jqXHR, textStatus, errorThrown) {
+	    lang_name = Code._Split(language);
+	    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
+	    //return Code._MakePreCodeTag(lang, filename);
+	})
+	;
     };
     // ```lang:filename
     Code._Split = function(language) {
@@ -38,6 +45,7 @@ define(function(require, exports, module) {
 	else if ('sh' == lang) { return 'shell'; }
 	else { return lang; }
     }
+    /*
     Code._MakeTag = function(lang, filename) {
 	// languages/*.min.js ファイルが存在したらロードする
 	$.ajax({
@@ -45,7 +53,11 @@ define(function(require, exports, module) {
 	})
 	.done(function (response, textStatus, jqXHR) {
 	    require(['js/lib/highlight/languages/'+lang+'.min'], function(hllangjs) {
-		return Code._MakePreCodeTag(lang, filename);
+		renderer.code = function(code, language) {
+		    lang_name = Code._Split(language);
+		    return Code._MakeTag(lang_name[0], lang_name[1]);
+		}
+		//return Code._MakePreCodeTag(lang, filename);
 	    });
 	})
 	.fail(function (jqXHR, textStatus, errorThrown) {
@@ -53,6 +65,7 @@ define(function(require, exports, module) {
 	})
 	;
     }
+    */
     // pre.code タグ作成
     Code._MakePreCodeTag = function(lang, filename) {
 	return '<pre>' + Code._FileNameTag(filename)+ '<code class="hljs">' + hljs.highlightAuto(code).value + '</code></pre>';
