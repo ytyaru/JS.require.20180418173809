@@ -8,7 +8,7 @@ define(function(require, exports, module) {
 	renderer.code = function(code, language) {
 	    lang_name = Code._Split(language);
 	    try {
-		require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min'], function(hllangjs) {
+		require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min'], function(hllangjs)) {
 		    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
 		    //return Code._MakeTag(lang_name[0], lang_name[1]);
 		}
