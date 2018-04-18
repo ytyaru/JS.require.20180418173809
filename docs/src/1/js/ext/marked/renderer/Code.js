@@ -3,10 +3,25 @@ define(function(require, exports, module) {
     var hljs = require('highlight');
     Code = {};
     Code.Setup = function(renderer) {
+	// 言語別ハイライト用JS読込
+	// https://stackoverflow.com/questions/17446844/dynamic-require-in-requirejs-getting-module-name-has-not-been-loaded-yet-for-c?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+	renderer.code = function(code, language) {
+	    lang_name = Code._Split(language);
+	    try {
+		require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min'], function(hllangjs) {
+		    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
+		    //return Code._MakeTag(lang_name[0], lang_name[1]);
+		}
+	    } catch (e) {
+		console.log(e);
+		return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
+	    }
+	};
+	/*
 	try {
 	    // 言語別ハイライト用JS読込
 	    // https://stackoverflow.com/questions/17446844/dynamic-require-in-requirejs-getting-module-name-has-not-been-loaded-yet-for-c?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-	    require(['js/lib/highlight/languages/'+lang+'.min'], function(hllangjs) {
+	    require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang)+'.min'], function(hllangjs) {
 		renderer.code = function(code, language) {
 		    lang_name = Code._Split(language);
 		    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
@@ -16,38 +31,16 @@ define(function(require, exports, module) {
 	} catch (e) {
 	    console.log(e);
 	}
+	*/
     };
-    /*
-    Code.Setup = function(renderer) {
-	lang_name = Code._Split(language);
-	// languages/*.min.js ファイルが存在したらロードする
-	$.ajax({
-	    url: 'https://ytyaru.github.io/JS.require.20180418173809/src/1/js/lib/highlight/languages/'+lang_name[0]+'.min.js',
-	})
-	.done(function (response, textStatus, jqXHR) {
-	    // 言語別ハイライト用JS読込
-	    // https://stackoverflow.com/questions/17446844/dynamic-require-in-requirejs-getting-module-name-has-not-been-loaded-yet-for-c?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-	    require(['js/lib/highlight/languages/'+lang+'.min'], function(hllangjs) {
-		renderer.code = function(code, language) {
-		    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
-		    //return Code._MakeTag(lang_name[0], lang_name[1]);
-		}
-	    });
-	})
-	.fail(function (jqXHR, textStatus, errorThrown) {
-	    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
-	    //return Code._MakePreCodeTag(lang, filename);
-	})
-	;
-    };
-    */
     // ```lang:filename
     Code._Split = function(language) {
 	var delimiter = ':';
 	var info = language.split(delimiter);
 	var lang = info.shift();
 	var fileName = info.join(delimiter);
-	return [Code._ReplaceLanguage(lang), fileName];
+	return [lang, fileName];
+	//return [Code._ReplaceLanguage(lang), fileName];
     };
     // ```sh とするが shell.min.js という名前である
     // ```html とするが xml.min.js しかない
@@ -61,30 +54,10 @@ define(function(require, exports, module) {
 	else if ('sh' == lang) { return 'shell'; }
 	else { return lang; }
     }
-    /*
-    Code._MakeTag = function(lang, filename) {
-	// languages/*.min.js ファイルが存在したらロードする
-	$.ajax({
-	    url: 'https://ytyaru.github.io/JS.require.20180418173809/src/1/js/lib/highlight/languages/'+lang+'.min.js',
-	})
-	.done(function (response, textStatus, jqXHR) {
-	    require(['js/lib/highlight/languages/'+lang+'.min'], function(hllangjs) {
-		renderer.code = function(code, language) {
-		    lang_name = Code._Split(language);
-		    return Code._MakeTag(lang_name[0], lang_name[1]);
-		}
-		//return Code._MakePreCodeTag(lang, filename);
-	    });
-	})
-	.fail(function (jqXHR, textStatus, errorThrown) {
-	    return Code._MakePreCodeTag(lang, filename);
-	})
-	;
-    }
-    */
     // pre.code タグ作成
     Code._MakePreCodeTag = function(lang, filename) {
-	return '<pre>' + Code._FileNameTag(filename)+ '<code class="hljs">' + hljs.highlightAuto(code).value + '</code></pre>';
+	console.log('lang:', lang, 'filename:', filename);
+	return '<pre>' + Code._FileNameTag(filename)+ '<code class="'+lang+'">' + hljs.highlightAuto(code).value + '</code></pre>';
     }
     // ファイル名表示用タグ
     Code._FileNameTag = function(fileName) {
