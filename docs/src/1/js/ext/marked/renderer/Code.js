@@ -8,7 +8,7 @@ define(function(require, exports, module) {
 	renderer.code = function(code, language) {
 	    lang_name = Code._Split(language);
 	    require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min'], function(hllangjs) {console.log('読込完了: highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min');});
-	    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
+	    return Code._MakePreCodeTag(lang_name[0], lang_name[1], code);
 	    /*
 	    renderer.code の応答を非同期にすると戻り値なしとして`undefined`になってしまう。
 	    languages/*.jsの動的ロードをするタイミングは別のときにすべき？
@@ -62,9 +62,9 @@ define(function(require, exports, module) {
 	else { return lang; }
     }
     // pre.code タグ作成
-    Code._MakePreCodeTag = function(lang, filename) {
-	console.log('lang:', lang, 'filename:', filename);
-	return '<pre>' + Code._FileNameTag(filename)+ '<code class="'+lang+'">' + hljs.highlightAuto(code).value + '</code></pre>';
+    Code._MakePreCodeTag = function(lang, fileName, code) {
+	console.log('lang:', lang, 'fileName:', fileName);
+	return '<pre>' + Code._FileNameTag(fileName)+ '<code class="'+lang+'">' + hljs.highlightAuto(code).value + '</code></pre>';
     }
     // ファイル名表示用タグ
     Code._FileNameTag = function(fileName) {
