@@ -21,7 +21,7 @@ define(function(require, exports, module) {
     // 言語別ハイライト用JS読込
     Code._DynamicLoadHllangjs = function(lang) {
 	// https://stackoverflow.com/questions/17446844/dynamic-require-in-requirejs-getting-module-name-has-not-been-loaded-yet-for-c?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-	var hllangjs = require('js/lib/highlight/languages/'+lang);
+	var hllangjs = require('js/lib/highlight/languages/'+lang+'.min');
 	//var hllangjs = require('js/lib/highlight/languages/'+language+'.js');
     };
     // ファイル名表示用タグ
