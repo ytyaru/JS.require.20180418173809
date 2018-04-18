@@ -7,6 +7,12 @@ define(function(require, exports, module) {
 	// https://stackoverflow.com/questions/17446844/dynamic-require-in-requirejs-getting-module-name-has-not-been-loaded-yet-for-c?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 	renderer.code = function(code, language) {
 	    lang_name = Code._Split(language);
+	    require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min'], function(hllangjs) {console.log('読込完了: highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min');});
+	    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
+	    /*
+	    renderer.code の応答を非同期にすると戻り値なしとして`undefined`になってしまう。
+	    languages/*.jsの動的ロードをするタイミングは別のときにすべき？
+	    
 	    try {
 		require(['js/lib/highlight/languages/'+Code._ReplaceLanguage(lang_name[0])+'.min'], function(hllangjs) {
 		    return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
@@ -16,6 +22,7 @@ define(function(require, exports, module) {
 		console.log(e);
 		return Code._MakePreCodeTag(lang_name[0], lang_name[1]);
 	    }
+	    */
 	};
 	/*
 	try {
