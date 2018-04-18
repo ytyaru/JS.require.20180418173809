@@ -3,7 +3,7 @@ define(function(require, exports, module) {
     Code.Setup = function(renderer) {
 	renderer.code = function(code, language) {
 	    lang_name = Code._Split(language);
-	    require(['js/lib/highlight/languages/'+lang_name[0]], function(hllangjs) {
+	    require(['js/lib/highlight/languages/'+lang_name[0]+'.min'], function(hllangjs) {
 		return '<pre>' + Code._FileNameTag(lang_name[1])+ '<code class="hljs">' + hljs.highlightAuto(code).value + '</code></pre>';
 	    });
 	    //Code._DynamicLoadHllangjs(lang_name[0]);
